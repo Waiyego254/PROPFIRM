@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "es2016",          // Matches your backend target
+    "module": "none",           // Changed to plain JS, no modules
+    "outDir": "./dist",         // Output to frontend/dist
+    "rootDir": "./src",         // Source in frontend/src
+    "strict": true,             // Matches your strict setting
+    "esModuleInterop": true,    // For compatibility
+    "forceConsistentCasingInFileNames": true, // Matches your setting
+    "skipLibCheck": true        // Matches your setting
+  },
+  "include": ["src/**/*", "src/*.d.ts"],
+  "exclude": ["node_modules"]
+}

@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard - Apex Markets</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #E9FBFB;
+            display: flex;
+        }
+        .sidebar {
+            width: 250px;
+            background-color: #002143;
+            color: #fff;
+            padding: 20px;
+            height: 100vh;
+        }
+        .sidebar h2 {
+            margin-top: 0;
+        }
+        .sidebar ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .sidebar ul li {
+            margin: 15px 0;
+        }
+        .sidebar ul li a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .sidebar ul li a:hover {
+            color: #007bff;
+        }
+        .main-content {
+            flex: 1;
+            padding: 20px;
+        }
+        .main-content h1 {
+            margin-top: 0;
+        }
+        .section {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            display: none;
+        }
+        .section.active {
+            display: block;
+        }
+        .section table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .section table th, .section table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        .section table th {
+            background-color: #f4f4f4;
+        }
+        .section table td.no-data {
+            text-align: center;
+            color: #999;
+        }
+        .simulate-btn {
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        .simulate-btn:hover {
+            background-color: #218838;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            width: 400px;
+        }
+        .modal-content input, .modal-content textarea {
+            width: 95%;
+            padding: 8px;
+            margin: 10px 0;
+        }
+        .modal-content button {
+            margin: 10px 5px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .modal-content .btn-confirm {
+            background-color: #007bff;
+            color: #fff;
+        }
+        .modal-content .btn-cancel {
+            background-color: #dc3545;
+            color: #fff;
+        }
+        .modal-error {
+            color: red;
+            text-align: center;
+        }
+        .modal-success {
+            color: green;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Apex Markets</h2>
+        <ul>
+            <li><a id="account-link" class="active">Account</a></li>
+            <li><a id="transactions-link">Transactions</a></li>
+            <li><a id="logout-link">Logout</a></li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <h1>User Dashboard</h1>
+
+        <div id="account-section" class="section active">
+            <h2>Account Credentials</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Field</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody id="account-details"></tbody>
+            </table>
+        </div>
+
+        <div id="transactions-section" class="section">
+            <h2>Prop Transactions</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Transaction ID</th>
+                        <th>Prop Title</th>
+                        <th>Deposit Amount</th>
+                        <th>Trading Balance</th>
+                        <th>Account ID</th>
+                        <th>Date</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="transactions-list"></tbody>
+            </table>
+
+            <h2>Trade Transactions</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Trade ID</th>
+                        <th>Amount</th>
+                        <th>Description</th>
+                        <th>Account ID</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody id="trade-transactions-list"></tbody>
+            </table>
+        </div>
+
+        <div id="tradeModal" class="modal">
+            <div class="modal-content">
+                <h2>Simulate Trade</h2>
+                <input type="number" id="tradeAmount" placeholder="Amount (e.g., -100)" step="0.01">
+                <textarea id="tradeDescription" placeholder="Description (e.g., Short EUR/USD)"></textarea>
+                <p id="tradeMessage" class="modal-error"></p>
+                <button class="btn-confirm" id="confirmTradeBtn">Simulate</button>
+                <button class="btn-cancel" id="cancelTradeBtn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="dist/jwt-decode.js"></script>
+    <script src="dist/accountClient.js"></script>
+    <script>
+        const token = localStorage.getItem('token');
+        const accountId = localStorage.getItem('accountId');
+        if (!token || !accountId) {
+            window.location.href = 'clientlogin.html';
+        }
+        const client = accountClient(token);
+
+        const accountLink = document.getElementById('account-link');
+        const transactionsLink = document.getElementById('transactions-link');
+        const logoutLink = document.getElementById('logout-link');
+
+        const accountSection = document.getElementById('account-section');
+        const transactionsSection = document.getElementById('transactions-section');
+
+        function switchSection(sectionToShow) {
+            accountSection.classList.remove('active');
+            transactionsSection.classList.remove('active');
+            sectionToShow.classList.add('active');
+        }
+
+        accountLink.addEventListener('click', () => switchSection(accountSection));
+        transactionsLink.addEventListener('click', () => switchSection(transactionsSection));
+        logoutLink.addEventListener('click', () => {
+            localStorage.clear();
+            window.location.href = 'clientlogin.html';
+        });
+
+        function loadUserDetails() {
+            const decoded = jwt_decode(token);
+            const accountDetails = document.getElementById('account-details');
+            accountDetails.innerHTML = `
+                <tr><td>User ID</td><td>${decoded.id}</td></tr>
+                <tr><td>Username</td><td>${decoded.username}</td></tr>
+                <tr><td>Email</td><td>${decoded.email || 'N/A'}</td></tr>
+                <tr><td>Role</td><td>${decoded.role}</td></tr>
+                <tr><td>Account ID</td><td>${accountId}</td></tr>
+            `;
+        }
+
+        async function loadTransactions() {
+            const propTransactionsList = document.getElementById('transactions-list');
+            try {
+                const userId = jwt_decode(token).id;
+                const transactions = await client.getUserTransactions(userId);
+                const propPurchases = transactions.filter(t => t.depositAmount > 0); // Only purchases
+                propTransactionsList.innerHTML = propPurchases.length ? '' : '<tr><td colspan="7" class="no-data">No prop purchases</td></tr>';
+
+                propPurchases.forEach(t => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${t.transactionId}</td>
+                        <td>${t.title}</td>
+                        <td>$${t.depositAmount.toLocaleString()}</td>
+                        <td>$${t.tradingBalance.toLocaleString()}</td>
+                        <td>${t.accountId}</td>
+                        <td>${new Date(t.purchaseDate).toLocaleDateString()}</td>
+                        <td><button class="simulate-btn" onclick="showTradeModal('${t.accountId}', '${t.transactionId}')">Simulate Trade</button></td>
+                    `;
+                    propTransactionsList.appendChild(row);
+                });
+            } catch (error) {
+                propTransactionsList.innerHTML = `<tr><td colspan="7" class="no-data">${error.message || 'Failed to load prop transactions'}</td></tr>`;
+            }
+        }
+
+        async function loadTradeTransactions() {
+            const tradeTransactionsList = document.getElementById('trade-transactions-list');
+            try {
+                const userId = jwt_decode(token).id;
+                const trades = await client.getUserTradeTransactions(userId);
+                tradeTransactionsList.innerHTML = trades.length ? '' : '<tr><td colspan="5" class="no-data">No trade transactions</td></tr>';
+
+                trades.forEach(t => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${t.tradeId}</td>
+                        <td>$${t.amount.toLocaleString()}</td>
+                        <td>${t.description}</td>
+                        <td>${t.accountId}</td>
+                        <td>${new Date(t.tradeDate).toLocaleDateString()}</td>
+                    `;
+                    tradeTransactionsList.appendChild(row);
+                });
+            } catch (error) {
+                tradeTransactionsList.innerHTML = `<tr><td colspan="5" class="no-data">${error.message || 'Failed to load trade transactions'}</td></tr>`;
+            }
+        }
+
+        function showTradeModal(accountId, transactionId) {
+            const modal = document.getElementById('tradeModal');
+            const tradeAmount = document.getElementById('tradeAmount');
+            const tradeDescription = document.getElementById('tradeDescription');
+            const tradeMessage = document.getElementById('tradeMessage');
+
+            tradeAmount.value = '';
+            tradeDescription.value = '';
+            tradeMessage.textContent = '';
+            modal.style.display = 'flex';
+
+            document.getElementById('confirmTradeBtn').onclick = async () => {
+                try {
+                    const amount = parseFloat(tradeAmount.value);
+                    const description = tradeDescription.value;
+                    if (amount >= 0 || !description) throw new Error('Amount must be negative and description required');
+                    await client.simulateTrade(accountId, transactionId, amount, description);
+                    tradeMessage.className = 'modal-success';
+                    tradeMessage.textContent = 'Trade simulated successfully! Updating balance...';
+                    setTimeout(() => {
+                        modal.style.display = 'none';
+                        loadTransactions();
+                    }, 2000);
+                } catch (error) {
+                    tradeMessage.className = 'modal-error';
+                    tradeMessage.textContent = error.message || 'Error simulating trade';
+                }
+            };
+
+            document.getElementById('cancelTradeBtn').onclick = () => {
+                modal.style.display = 'none';
+            };
+        }
+
+        window.addEventListener('load', () => {
+            loadUserDetails();
+            loadTransactions();
+            loadTradeTransactions();
+        });
+    </script>
+</body>
+</html>

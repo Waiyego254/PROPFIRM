@@ -1,0 +1,115 @@
+# Base URL
+@baseUrl = http://localhost:3000
+@adminToken = {{loginAdmin.response.body.token}}
+
+### REGISTER ADMIN USER (Initially as user, promote later)
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+    "username": "admin",
+    "email": "admin@example.com",
+    "password": "adminpass123"
+}
+
+### LOGIN ADMIN USER
+# @name loginAdmin
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "admin@example.com",
+    "password": "adminpass123"
+}
+
+### FETCH ALL USERS
+GET {{baseUrl}}/admin/users
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+### FETCH ALL ACCOUNTS
+GET {{baseUrl}}/admin/accounts
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+### FETCH ALL TRADES
+GET {{baseUrl}}/admin/trades
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+### FETCH DASHBOARD STATS
+GET {{baseUrl}}/admin/stats
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+### TOGGLE ACCOUNT STATUS (DEACTIVATE)
+PATCH {{baseUrl}}/admin/toggle-account
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+    "accountId": "F5D41744-2EDA-4655-B801-0CBDBE60F523",
+    "isActive": false
+}
+
+### TOGGLE ACCOUNT STATUS (ACTIVATE)
+PATCH {{baseUrl}}/admin/toggle-account
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+    "accountId": "F5D41744-2EDA-4655-B801-0CBDBE60F523",
+    "isActive": true
+}
+
+### CHANGE USER ROLE TO ADMIN
+PATCH {{baseUrl}}/admin/change-role
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+    "userId": "{{loginAdmin.response.body.user.id}}",
+    "role": "admin"
+}
+
+### CHANGE USER ROLE TO USER (Revoke Admin Privileges)
+PATCH {{baseUrl}}/admin/change-role
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+    "userId": "{{loginAdmin.response.body.user.id}}",
+    "role": "user"
+}
+
+### CREATE PROP ACCOUNT
+POST {{baseUrl}}/admin/prop-accounts/create
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+    "title": "Beginner",
+    "tradingBalance": 5000,
+    "challengeFee": 49
+}
+
+### UPDATE PROP ACCOUNT
+PUT {{baseUrl}}/admin/prop-accounts/7759A940-832B-4173-BEBB-0AC5F88B2126
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+    "title": "Beginner",
+    "tradingBalance": 5000,
+    "challengeFee": 50
+}
+
+### GET ALL PROP ACCOUNTS
+GET {{baseUrl}}/admin/prop-accounts/get-all-accounts
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+### GET ALL TRANSACTIONS
+GET {{baseUrl}}/accounts/transactions/get-all-transactions
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}

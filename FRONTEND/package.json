@@ -1,0 +1,19 @@
+{
+  "name": "frontend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build": "esbuild src/accountClient.ts --bundle --outfile=dist/accountClient.js --format=iife --global-name=accountClient"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "jwt-decode": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/jwt-decode": "^2.2.1",
+    "esbuild": "^0.25.0"
+  }
+}

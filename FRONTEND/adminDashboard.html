@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Prop Firm</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            display: flex;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 250px;
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+            height: 100vh;
+        }
+        .sidebar h2 {
+            margin-top: 0;
+        }
+        .sidebar ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .sidebar ul li {
+            margin: 15px 0;
+        }
+        .sidebar ul li a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .sidebar ul li a:hover {
+            color: #007bff;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+        }
+        .main-content h1 {
+            margin-top: 0;
+        }
+
+        /* Cards for Quick Stats */
+        .cards {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .card {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            flex: 1;
+            text-align: center;
+        }
+        .card h3 {
+            margin-top: 0;
+        }
+        .card p {
+            font-size: 24px;
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        /* Tables for Data */
+        .section {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .section h2 {
+            margin-top: 0;
+        }
+        .section table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .section table th, .section table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        .section table th {
+            background-color: #f4f4f4;
+        }
+        .section table td.no-data {
+            text-align: center;
+            color: #999;
+        }
+
+        /* Buttons */
+        .btn {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+        .section.active { 
+            display: block; 
+        }
+        .section { 
+            display: none; 
+        }
+        .btn-danger { 
+            background-color: #dc3545; 
+        }
+        .btn-danger:hover { 
+            background-color: #c82333; 
+        }
+        .btn-success { 
+            background-color: #28a745; 
+        }
+        .btn-success:hover { 
+            background-color: #218838; 
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            width: 400px;
+        }
+        .modal-content input {
+            width: 95%;
+            padding: 8px;
+            margin: 10px 0;
+        }
+        .modal-content button {
+            margin: 10px 5px;
+        }
+        .modal-error {
+            color: red;
+            text-align: center;
+        }
+        .modal-result {
+            text-align: center;
+            margin: 10px 0;
+        }
+        .modal-result.success {
+            color: green;
+        }
+        .modal-result.error {
+            color: red;
+        }
+        .btn-confirm {
+            background-color: #007bff;
+            color: #fff;
+        }
+        .btn-confirm:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2>Admin Dashboard</h2>
+        <ul>
+            <li><a id="overview-link">Overview</a></li>
+            <li><a id="traders-link">Traders</a></li>
+            <li><a id="trades-link">Trades</a></li>
+            <li><a id="props-link">Props</a></li>
+            <li><a id="users-link">Users</a></li>
+            <li><a id="settings-link">Settings</a></li>
+            <li><a id="logout-link">Logout</a></li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <h1>Admin Dashboard</h1>
+
+        <!-- Overview Section -->
+        <div id="overview-section" class="section active">
+            <h2>Overview</h2>
+            <div class="cards">
+                <div class="card">
+                    <h3>Total Traders</h3>
+                    <p id="total-traders">0</p>
+                </div>
+                <div class="card">
+                    <h3>Active Trades</h3>
+                    <p id="active-trades">0</p>
+                </div>
+                <div class="card">
+                    <h3>Total Live Balance</h3>
+                    <p id="total-balance">$0</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Traders Section (Users with Live Accounts) -->
+        <div id="traders-section" class="section">
+            <h2>Traders</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Trader ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Status</th>
+                        <th>Account Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="traders-table-body">
+                    <tr><td colspan="6" class="no-data">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Trades Section -->
+        <div id="trades-section" class="section">
+            <h2>Prop Transactions</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Transaction ID</th>
+                        <th>User Email</th>
+                        <th>Prop Title</th>
+                        <th>Deposit Amount</th>
+                        <th>Trading Balance</th>
+                        <th>Account ID</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody id="trades-table-body">
+                    <tr><td colspan="7" class="no-data">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Users Section (Replaces Payouts) -->
+        <div id="users-section" class="section">
+            <h2>All Users</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>User ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="users-table-body">
+                    <tr><td colspan="5" class="no-data">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- New Props Section -->
+        <div id="props-section" class="section">
+            <h2>Prop Accounts</h2>
+            <button class="btn" id="createPropBtn">Create New Prop Account</button>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Title</th>
+                        <th>Trading Balance</th>
+                        <th>Challenge Fee</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="props-table-body">
+                    <tr><td colspan="5" class="no-data">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Modal for Creating/Updating Prop Account -->
+        <div id="propModal" class="modal">
+            <div class="modal-content">
+                <h2 id="modalTitle">Create Prop Account</h2>
+                <input type="text" id="propTitle" placeholder="Title (e.g., Beginner)">
+                <input type="number" id="propTradingBalance" placeholder="Trading Balance (e.g., 5000)">
+                <input type="number" id="propChallengeFee" placeholder="Challenge Fee (e.g., 49)">
+                <p id="modalError" class="modal-error"></p>
+                <button class="btn" id="savePropBtn">Save</button>
+                <button class="btn btn-danger" id="cancelPropBtn">Cancel</button>
+            </div>
+        </div>
+
+                <!-- Modal for Toggling Account Status -->
+        <div id="toggleAccountModal" class="modal">
+            <div class="modal-content">
+                <h2 id="toggleAccountModalTitle">Confirm Action</h2>
+                <p id="toggleAccountModalMessage">Are you sure you want to proceed?</p>
+                <p id="toggleAccountModalResult" class="modal-result"></p>
+                <button class="btn btn-confirm" id="confirmToggleAccountBtn">Confirm</button>
+                <button class="btn btn-danger" id="cancelToggleAccountBtn">Cancel</button>
+            </div>
+        </div>
+
+        <!-- Modal for Changing User Role -->
+        <div id="changeRoleModal" class="modal">
+            <div class="modal-content">
+                <h2 id="changeRoleModalTitle">Confirm Role Change</h2>
+                <p id="changeRoleModalMessage">Are you sure you want to proceed?</p>
+                <p id="changeRoleModalResult" class="modal-result"></p>
+                <button class="btn btn-confirm" id="confirmChangeRoleBtn">Confirm</button>
+                <button class="btn btn-danger" id="cancelChangeRoleBtn">Cancel</button>
+            </div>
+        </div>
+
+        <!-- Modal for Updating Prop Account -->
+        <div id="updatePropModal" class="modal">
+            <div class="modal-content">
+                <h2 id="updatePropModalTitle">Update Prop Account</h2>
+                <input type="text" id="updatePropTitle" placeholder="Title (e.g., Beginner)">
+                <input type="number" id="updatePropTradingBalance" placeholder="Trading Balance (e.g., 5000)">
+                <input type="number" id="updatePropChallengeFee" placeholder="Challenge Fee (e.g., 49)">
+                <p id="updatePropModalError" class="modal-error"></p>
+                <button class="btn" id="saveUpdatePropBtn">Save</button>
+                <button class="btn btn-danger" id="cancelUpdatePropBtn">Cancel</button>
+            </div>
+    </div>
+
+        <!-- Settings Section -->
+        <div id="settings-section" class="section">
+            <h2>Settings</h2>
+            <p>Configure system settings here.</p>
+            <button class="btn">Save Changes</button>
+        </div>
+    </div>
+
+    <script src="dist/adminClient.js"></script>
+    <script>
+        // Section switching logic (unchanged)
+        const overviewLink = document.getElementById('overview-link');
+        const tradersLink = document.getElementById('traders-link');
+        const tradesLink = document.getElementById('trades-link');
+        const propsLink = document.getElementById('props-link');
+        const usersLink = document.getElementById('users-link');
+        const settingsLink = document.getElementById('settings-link');
+        const logoutLink = document.getElementById('logout-link');
+
+        const overviewSection = document.getElementById('overview-section');
+        const tradersSection = document.getElementById('traders-section');
+        const tradesSection = document.getElementById('trades-section');
+        const propsSection = document.getElementById('props-section');
+        const usersSection = document.getElementById('users-section');
+        const settingsSection = document.getElementById('settings-section');
+
+        function switchSection(sectionToShow) {
+            overviewSection.classList.remove('active');
+            tradersSection.classList.remove('active');
+            tradesSection.classList.remove('active');
+            propsSection.classList.remove('active');
+            usersSection.classList.remove('active');
+            settingsSection.classList.remove('active');
+            sectionToShow.classList.add('active');
+        }
+
+        overviewLink.addEventListener('click', () => switchSection(overviewSection));
+        tradersLink.addEventListener('click', () => switchSection(tradersSection));
+        tradesLink.addEventListener('click', () => switchSection(tradesSection));
+        propsLink.addEventListener('click', () => switchSection(propsSection));
+        usersLink.addEventListener('click', () => switchSection(usersSection));
+        settingsLink.addEventListener('click', () => switchSection(settingsSection));
+
+        // Admin client integration
+        const token = localStorage.getItem('token');
+            if (!token) {
+                            window.location.href = 'clientlogin.html'; // Redirect to login if no token
+                            throw new Error('No token found');
+                        }
+        const client = adminClient(token);
+
+        // Fetch and display overview stats
+        async function loadOverview() {
+            try {
+                const stats = await client.fetchDashboardStats();
+                document.getElementById('total-traders').textContent = stats.totalTraders;
+                document.getElementById('active-trades').textContent = stats.activeTrades;
+                document.getElementById('total-balance').textContent = `$${stats.totalLiveBalance.toLocaleString()}`;
+            } catch (error) {
+                console.error('Error fetching stats:', error.message);
+                document.getElementById('total-traders').textContent = 'Error';
+                document.getElementById('active-trades').textContent = 'Error';
+                document.getElementById('total-balance').textContent = 'Error';
+            }
+}
+
+        // Fetch and display traders (users with live accounts)
+        async function loadTraders() {
+        try {
+            const { accounts } = await client.fetchAllAccounts();
+            const { users } = await client.fetchAllUsers();
+            const liveAccounts = accounts.filter(acc => acc.type === 'live');
+        
+        // Deduplicate by userId
+            const uniqueTraders = new Map();
+            liveAccounts.forEach(account => {
+                if (!uniqueTraders.has(account.userId)) {
+                    uniqueTraders.set(account.userId, account);
+                }
+            });
+
+            const tradersTableBody = document.getElementById('traders-table-body');
+            tradersTableBody.innerHTML = uniqueTraders.size ? '' : '<tr><td colspan="6" class="no-data">No live accounts</td></tr>';
+
+            uniqueTraders.forEach((account, userId) => {
+                const user = users.find(u => u.id === userId);
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${userId}</td>
+                    <td>${user ? user.username : 'Unknown'}</td>
+                    <td>${user ? user.email : 'Unknown'}</td>
+                    <td>${user ? (user.isActive ? 'Active' : 'Inactive') : 'Unknown'}</td>
+                    <td>${account.isActive ? 'Active' : 'Inactive'}</td>
+                    <td>
+                        <button class="btn ${account.isActive ? 'btn-danger' : 'btn-success'}" 
+                                onclick="toggleAccount('${account.id}', ${!account.isActive})">
+                            ${account.isActive ? 'Deactivate' : 'Activate'}
+                        </button>
+                    </td>
+                `;
+                tradersTableBody.appendChild(row);
+            });
+    }   catch (error) {
+        console.error('Error fetching traders:', error.message);
+        document.getElementById('traders-table-body').innerHTML = `<tr><td colspan="6" style="color: red;">${error.message}</td></tr>`;
+    }
+}
+
+        // Fetch and display trades
+        async function loadTrades() {
+            try {
+                const { transactions } = await client.fetchAllTransactions();
+                const { users } = await client.fetchAllUsers();
+                const tradesTableBody = document.getElementById('trades-table-body');
+                tradesTableBody.innerHTML = transactions.length ? '' : '<tr><td colspan="7" class="no-data">No transactions</td></tr>';
+
+                transactions.forEach(transaction => {
+                    const user = users.find(u => u.id === transaction.userId);
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${transaction.transactionId}</td>
+                        <td>${user ? user.email : 'Unknown'}</td>
+                        <td>${transaction.title}</td>
+                        <td>$${transaction.depositAmount.toLocaleString()}</td>
+                        <td>$${transaction.tradingBalance.toLocaleString()}</td>
+                        <td>${transaction.accountId}</td>
+                        <td>${new Date(transaction.purchaseDate).toLocaleDateString()}</td>
+                    `;
+                    tradesTableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error fetching transactions:', error.message);
+                tradesTableBody.innerHTML = `<tr><td colspan="7" class="no-data">${error.message || 'Failed to load transactions'}</td></tr>`;
+            }
+        }
+
+        // Fetch and display all users
+        async function loadUsers() {
+            try {
+                const { users } = await client.fetchAllUsers();
+                const nonAdminUsers = users.filter(user => user.role !== 'admin');
+                const usersTableBody = document.getElementById('users-table-body');
+                usersTableBody.innerHTML = '';
+
+                nonAdminUsers.forEach(user => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${user.id}</td>
+                        <td>${user.username}</td>
+                        <td>${user.email}</td>
+                        <td>${user.role}</td>
+                        <td>
+                            <button class="btn ${user.role === 'admin' ? 'btn-danger' : 'btn-success'}" 
+                                    onclick="changeRole('${user.id}', '${user.role === 'admin' ? 'user' : 'admin'}')">
+                                ${user.role === 'admin' ? 'Revoke Admin' : 'Make Admin'}
+                            </button>
+                        </td>
+                    `;
+                    usersTableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error fetching users:', error.message);
+            }
+        }
+
+        // Toggle account status
+        async function toggleAccount(accountId, isActive) {
+    const modal = document.getElementById('toggleAccountModal');
+    const title = document.getElementById('toggleAccountModalTitle');
+    const message = document.getElementById('toggleAccountModalMessage');
+    const result = document.getElementById('toggleAccountModalResult');
+    const confirmBtn = document.getElementById('confirmToggleAccountBtn');
+    const cancelBtn = document.getElementById('cancelToggleAccountBtn');
+
+    title.textContent = `Confirm ${isActive ? 'Activation' : 'Deactivation'}`;
+    message.textContent = `Are you sure you want to ${isActive ? 'activate' : 'deactivate'} this live account?`;
+    result.textContent = '';
+    result.className = 'modal-result';
+    modal.style.display = 'flex';
+
+    confirmBtn.onclick = async () => {
+        try {
+            const response = await client.toggleAccountStatus(accountId, isActive);
+            result.className = 'modal-result success';
+            result.textContent = response.message;
+            confirmBtn.style.display = 'none'; // Hide confirm button after success
+            setTimeout(() => {
+                modal.style.display = 'none';
+                loadTraders();
+            }, 2000);
+        } catch (error) {
+            result.className = 'modal-result error';
+            result.textContent = error.message || 'Error toggling account';
+        }
+    };
+
+    cancelBtn.onclick = () => {
+        modal.style.display = 'none';
+    };
+}
+
+        // Change user role
+        async function changeRole(userId, role) {
+    const modal = document.getElementById('changeRoleModal');
+    const title = document.getElementById('changeRoleModalTitle');
+    const message = document.getElementById('changeRoleModalMessage');
+    const result = document.getElementById('changeRoleModalResult');
+    const confirmBtn = document.getElementById('confirmChangeRoleBtn');
+    const cancelBtn = document.getElementById('cancelChangeRoleBtn');
+
+    title.textContent = `Confirm Role Change to ${role}`;
+    message.textContent = `Are you sure you want to change this user's role to ${role}?`;
+    result.textContent = '';
+    result.className = 'modal-result';
+    modal.style.display = 'flex';
+
+    confirmBtn.onclick = async () => {
+        try {
+            const response = await client.changeUserRole(userId, role);
+            result.className = 'modal-result success';
+            result.textContent = response.message;
+            confirmBtn.style.display = 'none'; // Hide confirm button after success
+            setTimeout(() => {
+                modal.style.display = 'none';
+                loadUsers();
+            }, 2000);
+        } catch (error) {
+            result.className = 'modal-result error';
+            result.textContent = error.message || 'Error changing role';
+        }
+    };
+
+    cancelBtn.onclick = () => {
+        modal.style.display = 'none';
+    };
+}
+
+        async function loadProps() {
+            try {
+                const { propAccounts } = await client.fetchAllPropAccounts();
+                const propsTableBody = document.getElementById('props-table-body');
+                propsTableBody.innerHTML = propAccounts.length ? '' : '<tr><td colspan="5" class="no-data">No prop accounts</td></tr>';
+
+                propAccounts.forEach(account => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${account.id}</td>
+                        <td>${account.title}</td>
+                        <td>$${account.tradingBalance.toLocaleString()}</td>
+                        <td>$${account.challengeFee.toLocaleString()}</td>
+                        <td><button class="btn" onclick="showUpdateModal('${account.id}', '${account.title}', ${account.tradingBalance}, ${account.challengeFee})">Update</button></td>
+                    `;
+                    propsTableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error fetching prop accounts:', error.message);
+                document.getElementById('props-table-body').innerHTML = `<tr><td colspan="5" class="no-data">${error.message}</td></tr>`;
+            }
+        }
+
+        // Modal functions
+        function showCreateModal() {
+            const modal = document.getElementById('propModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const propTitle = document.getElementById('propTitle');
+            const propTradingBalance = document.getElementById('propTradingBalance');
+            const propChallengeFee = document.getElementById('propChallengeFee');
+            const modalError = document.getElementById('modalError');
+
+            modalTitle.textContent = 'Create Prop Account';
+            propTitle.value = '';
+            propTradingBalance.value = '';
+            propChallengeFee.value = '';
+            modalError.textContent = '';
+            modal.style.display = 'flex';
+
+            document.getElementById('savePropBtn').onclick = async () => {
+                try {
+                    const title = propTitle.value;
+                    const tradingBalance = parseFloat(propTradingBalance.value);
+                    const challengeFee = parseFloat(propChallengeFee.value);
+                    await client.createPropAccount(title, tradingBalance, challengeFee);
+                    modal.style.display = 'none';
+                    loadProps();
+                } catch (error) {
+                    modalError.textContent = error.message || 'Error creating prop account';
+                }
+            };
+        }
+
+        function showUpdateModal(id, title, tradingBalance, challengeFee) {
+            const modal = document.getElementById('propModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const propTitle = document.getElementById('propTitle');
+            const propTradingBalance = document.getElementById('propTradingBalance');
+            const propChallengeFee = document.getElementById('propChallengeFee');
+            const modalError = document.getElementById('modalError');
+
+            modalTitle.textContent = 'Update Prop Account';
+            propTitle.value = title;
+            propTradingBalance.value = tradingBalance;
+            propChallengeFee.value = challengeFee;
+            modalError.textContent = '';
+            modal.style.display = 'flex';
+
+            document.getElementById('savePropBtn').onclick = async () => {
+                try {
+                    const updatedTitle = propTitle.value;
+                    const updatedTradingBalance = parseFloat(propTradingBalance.value);
+                    const updatedChallengeFee = parseFloat(propChallengeFee.value);
+                    await client.updatePropAccount(id, updatedTitle, updatedTradingBalance, updatedChallengeFee);
+                    modal.style.display = 'none';
+                    loadProps();
+                } catch (error) {
+                    modalError.textContent = error.message || 'Error updating prop account';
+                }
+            };
+        }
+
+        document.getElementById('createPropBtn').addEventListener('click', showCreateModal);
+        document.getElementById('cancelPropBtn').addEventListener('click', () => {
+            document.getElementById('propModal').style.display = 'none';
+        });
+
+        logoutLink.addEventListener('click', () => {
+            localStorage.clear();
+            window.location.href = 'clientlogin.html';
+        });
+
+        // Load data on page load
+        loadOverview();
+        loadTraders();
+        loadTrades();
+        loadUsers();
+        loadProps();
+    </script>
+</body>
+</html>

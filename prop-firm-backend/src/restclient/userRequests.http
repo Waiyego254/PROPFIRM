@@ -1,0 +1,71 @@
+# Base URL
+@baseUrl = http://localhost:3000
+@userToken = {{loginUser.response.body.token}}
+
+### REGISTER USER
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+    "username": "johndoe",
+    "email": "john.doe@example.com",
+    "password": "securepass123"
+}
+
+### LOGIN USER
+# @name loginUser
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "john.doe@example.com",
+    "password": "securepass123"
+}
+
+### CREATE DEMO ACCOUNT
+POST {{baseUrl}}/accounts/create
+Content-Type: application/json
+Authorization: Bearer {{userToken}}
+
+{
+    "userId": "{{loginUser.response.body.user.id}}",
+    "type": "demo"
+}
+
+### CREATE LIVE ACCOUNT
+# @name createLiveAccount
+POST {{baseUrl}}/accounts/create
+Content-Type: application/json
+Authorization: Bearer {{userToken}}
+
+{
+    "userId": "{{loginUser.response.body.user.id}}",
+    "type": "live"
+}
+
+### PURCHASE LIVE ACCOUNT
+POST {{baseUrl}}/accounts/purchase
+Content-Type: application/json
+Authorization: Bearer {{userToken}}
+
+{
+    "accountId": "{{createLiveAccount.response.body.account.id}}",
+    "depositAmount": 100,
+    "tradingBalance": 5000
+}
+
+### SIMULATE TRADE
+POST {{baseUrl}}/accounts/trade
+Content-Type: application/json
+Authorization: Bearer {{userToken}}
+
+{
+    "accountId": "{{createLiveAccount.response.body.account.id}}",
+    "amount": -200,
+    "description": "Forex trade - EUR/USD"
+}
+
+### GET USER ACCOUNTS
+GET {{baseUrl}}/accounts/{{loginUser.response.body.user.id}}
+Content-Type: application/json
+Authorization: Bearer {{userToken}}

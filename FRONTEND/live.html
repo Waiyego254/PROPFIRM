@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="./styles/styles.css">
+    <title>Apex Markets Group | Live Account</title>
+</head>
+<body>
+    <header class="main-header">
+        <div class="wrapper flex">
+            <div class="wrapper-logo flex" style="flex-grow: 1; margin-bottom: 80px;">
+                <a class="flex" href="index.html" style="align-items: center;">
+                    <div class="logo-mark" style="width: 175px; height: 48px;"><img src="./assets/apex_logo.png" alt="Circle with three lines"></div>
+                </a>	
+            </div>
+            <nav class="nav-horizontal">
+                <ul class="flex light-text">
+                    <li><a href="index.html">Home</a></li>
+                    <li>
+                        <div class="position-relative drop-down"><a href="#">Trade Now</a></div>
+                        <ul class="drop-down-list">
+                            <li><a href="live.html">Live Account</a></li>
+                            <li><a href="demo.html">Demo Account</a></li>
+                            <li><a href="prop.html">Prop Challenge</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="faq.html">FAQ</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                    <li><a id="logout-link">Logout</a></li>
+                </ul>
+            </nav>
+            <nav class="nav-vertical">
+                <div class="close-btn"></div>
+                <ul class="light-text">
+                    <li><a href="index.html">Home</a></li>
+                    <li>
+                        <div class="position-relative drop-down"><a href="#">Trade Now</a></div>
+                        <ul class="drop-down-list">
+                            <li><a href="live.html">Live Account</a></li>
+                            <li><a href="demo.html">Demo Account</a></li>
+                            <li><a href="prop.html">Prop Challenge</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="faq.html">FAQ</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </nav>
+            <div class="flex" style="align-items: center;">
+                <div class="menu-btn-wrapper" style="width: 40px; height: 40px;">
+                    <div class="menu-btn"></div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="page-hero-section">
+        <div class="wrapper">
+            <div class="page-hero-content">
+                <h1 class="hero-title accent-text">Live Account</h1>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="contact-section bg-secondary" style="padding-top: 50px !important;">
+        <div class="wrapper">
+            <div class="section-content">
+                <div class="form-wrapper border-radius-10">
+                    <div id="live-account-form" class="main-form">
+                        <h2>Create Live Account</h2>
+                        <button class="btn border-radius-10 accent-bg-1 light-text ff-bold" id="createLiveBtn" style="margin: 0 auto; margin-top: 2rem;">Create Live Account</button>
+                        <p id="message" style="font-size: 1rem; text-align: center; margin-top: 2rem;"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <!-- Footer content unchanged -->
+    </footer>
+    <script src="dist/jwt-decode.js"></script>
+    <script src="dist/accountClient.js"></script>
+    <script>
+        // Ensure jwt_decode is loaded
+        if (typeof jwt_decode === 'undefined') {
+            document.getElementById('message').textContent = 'Error: jwt_decode library not loaded';
+            throw new Error('jwt_decode is not defined');
+        }
+
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.href = 'clientlogin.html';
+        }
+        const client = accountClient(token);
+
+        document.getElementById('createLiveBtn').addEventListener('click', async () => {
+            const messageEl = document.getElementById('message');
+            try {
+                messageEl.textContent = 'Creating live account...';
+                const decoded = jwt_decode(token);
+                const userId = decoded.id; // Use 'id' as per login response
+                console.log('Decoded userId:', userId); // Debug
+
+                const account = await client.createAccount(userId, 'live');
+                const accountId = account.id;
+
+                if (!accountId) throw new Error('No account ID returned');
+
+                localStorage.setItem('accountId', accountId);
+                console.log('Stored accountId:', accountId); // Verify
+
+                messageEl.textContent = 'Account created, redirecting...';
+                setTimeout(() => {
+                    window.location.href = 'prop.html';
+                }, 3000);
+            } catch (error) {
+                messageEl.textContent = error.message || 'Failed to create live account';
+                console.error('Error:', error);
+            }
+        });
+
+        document.getElementById('logout-link').addEventListener('click', () => {
+            localStorage.clear();
+            window.location.href = 'clientlogin.html';
+        });
+    </script>
+</body>
+</html>

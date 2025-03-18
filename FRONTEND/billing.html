@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Billing Details</title>
+  <style>
+    /* CSS for styling the form */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .billing-form {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      width: 300px;
+    }
+
+    .billing-form h2 {
+      margin-bottom: 20px;
+      font-size: 24px;
+      color: #333;
+    }
+
+    .billing-form label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #555;
+    }
+
+    .billing-form input,
+    .billing-form select {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+
+    .billing-form button {
+      width: 100%;
+      padding: 10px;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .billing-form button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <div class="billing-form">
+    <h2>Billing Details</h2>
+    <form id="billingForm">
+      <label for="lastName">Last Name*</label>
+      <input type="text" id="lastName" name="lastName" required>
+
+      <label for="country">Country*</label>
+      <select id="country" name="country" required>
+        <option value="">Select Country</option>
+        <option value="USA">United States</option>
+        <option value="UK">United Kingdom</option>
+        <option value="Canada">Canada</option>
+        <option value="Australia">Australia</option>
+        <!-- Add more countries as needed -->
+      </select>
+
+      <button type="submit">Proceed To Pay</button>
+    </form>
+  </div>
+
+  <script>
+    // JavaScript to handle form submission
+    document.getElementById('billingForm').addEventListener('submit', function(event) {
+      event.preventDefault(); // Prevent the form from submitting the traditional way
+
+      // Get form values
+      const lastName = document.getElementById('lastName').value;
+      const country = document.getElementById('country').value;
+
+      // Validate form inputs
+      if (!lastName || !country) {
+        alert('Please fill out all required fields.');
+        return;
+      }
+
+      // Simulate a payment process
+      alert(`Proceeding to pay for ${lastName} from ${country}.`);
+      // Here you can add actual payment processing logic
+    });
+  </script>
+</body>
+</html>

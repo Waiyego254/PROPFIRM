@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700;900&display=swap" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="./styles/styles.css">
+	<title>Apex Markets Group | Prop Challenge</title>
+
+	<style>
+        /* Add modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            max-width: 400px;
+        }
+        .modal-content button {
+            margin: 10px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .confirm-btn {
+            background-color: #007bff;
+            color: #fff;
+        }
+        .cancel-btn {
+            background-color: #dc3545;
+            color: #fff;
+        }
+    </style>
+
+</head>
+<body>
+	<header class="main-header">
+		<div class="wrapper flex">
+			<div class="wrapper-logo flex" style="flex-grow: 1; margin-bottom: 80px;">
+				<a class="flex" href="index.html" style="align-items: center;">
+					<div class="logo-mark" style="width: 175px; height: 48px;"><img src="./assets/apex_logo.png" alt="Circle with three lines"></div>
+				</a>	
+			</div>
+			<nav class="nav-horizontal">
+				<ul class="flex light-text">
+					<li><a href="index.html">Home</a></li>
+					<li>
+						<div class="position-relative drop-down"><a href="#">Trade Now</a></div>
+						<ul class="drop-down-list">
+							<li><a href="live.html">Live Account</a></li>
+							<li><a href="demo.html">Demo Account</a></li>
+							<li><a href="prop.html">Prop Challenge</a></li>
+						</ul>
+					</li>
+					<li><a href="about.html">About</a></li>
+					<li><a href="faq.html">FAQ</a></li>
+					<li><a href="contact.html">Contact</a></li>
+					<li><a id="logout-link">Logout</a></li>
+				</ul>
+			</nav>
+			<nav class="nav-vertical">
+				<div class="close-btn"></div>
+				<ul class="light-text">
+					<li><a href="index.html">Home</a></li>
+					<li>
+						<div class="position-relative drop-down"><a href="#">Trade Now</a></div>
+						<ul class="drop-down-list">
+							<li><a href="live.html">Live Account</a></li>
+							<li><a href="demo.html">Demo Account</a></li>
+							<li><a href="prop.html">Prop Challenge</a></li>
+						</ul>
+					</li>
+					<li><a href="about.html">About</a></li>
+					<li><a href="faq.html">FAQ</a></li>
+					<li><a href="contact.html">Contact</a></li>
+				</ul>
+			</nav>
+			<div class="flex" style="align-items: center;">
+				<div class="menu-btn-wrapper" style="width: 40px; height: 40px;">
+					<div class="menu-btn"></div>
+				</div>
+				<div class="login-lang-wrapper">
+					<div><a class="login-cta border border-radius-10 dark-text ff-bold" href="https://webtrader-apex.condor-fx.com/" target="_blank">Client Login</a></div>
+				</div>
+			</div>
+		</div>
+	</header>
+
+	<section class="page-hero-section">
+		<div class="wrapper">
+			<div class="page-hero-content">
+				<h1 class="hero-title accent-text">Prop Challenge</h1>
+			</div>
+		</div>
+	</section>
+
+	<section id="programs" class="programs-section" style="padding-top: 80px !important;">
+		<div class="wrapper">
+			<p>Phase I of our Challenge is when you first enter the evaluation process. Once officially
+			entered, you must reach the stated profit target while remaining within the rules. The
+			duration of Phase I is 30 days.</p>
+			<br>
+			<p>In Phase I, you will execute simulated trades within a demo environment. You can closely
+			track your performance within the ‘Contest Stats’ tab of our platform.</p>
+			<br>
+			<p>You have full risk management control at all times.</p>
+			<br>
+			<p>Once you successfully complete Phase I and demonstrate your skills, you will receive your
+			Phase II account within 24 hours and continue your road to getting funded.</p>
+			<br>
+			<p>Phase II is the validation phase where you must show consistency in your approach and solid
+			risk management. You must achieve the stated virtual profit target while not breaking any
+			rules. The duration of Phase II is 30 days.</p>
+			<br>
+			<p>Within this phase, you will again execute trades within a demo environment that simulates
+			the real market in pricing and execution.</p>
+			<br>
+			<p>Once you successfully pass Phase II, your results will be verified and you will receive
+			information regarding your new live funded account for which you will receive a profit share.</p>
+			<br>
+			<p>If you do not succeed in passing either Phase I or Phase II, please stay the course and re-enter
+			our Challenge. Apex Markets Group has confidence in our traders and we are here to assist
+			you in tweaking your approach should you decide to re-enter.</p>
+			<br>
+			<p>May the pips be with you!</p>
+
+			<section class="page-section prop-cards" id="prop-cards">
+                <!-- Dynamic cards will be inserted here -->
+            </section>
+		</div>		
+	</section>
+
+	<!-- Modal for confirmation -->
+    <div id="confirmModal" class="modal">
+        <div class="modal-content">
+            <h2>Confirm Purchase</h2>
+            <p id="modalText"></p>
+            <p id="modalStatus" class="modal-error"></p>
+            <button class="confirm-btn" id="confirmBtn">Confirm</button>
+            <button class="cancel-btn" id="cancelBtn">Cancel</button>
+        </div>
+    </div>
+
+
+	<section class="page-section">
+		<div class="wrapper">
+			<div class="section-text">
+				<p>Speculation in digital currencies (cryptocurrencies continues to reach an all-time high and we are proud at Apex Markets Group to offer our the full suite of the most popular cryptos to trade including BTC/USD, ETH/USD, LTC/USD, and BCH/USD. </p>
+				<br>
+				<p>All cryptocurrencies are traded on a CFD basis with a leverage basis of up to 200:1. Since clients are trading on a CFD basis, this means the client does not physically own the cryptocurrency and rather is speculating on the price movement.</p>
+				<br>
+				<p>Along with supply and demand factors, cryptocurrencies move based on market sentiment – similar to Forex and Equities. Cryptocurrencies tend to have wider swings than other financial instruments to traders should take care to properly manage their risk when they trade cryptos.</p>
+			</div>
+		</div>
+	</section>
+	<section class="instructions-section bg-secondary">
+		<div class="wrapper">
+			<div class="section-text">
+				<h2 class="text-center">Ready to trade?</h2>
+			</div>
+
+			<div class="icons section-content">
+				<div class="step mb">
+					<div class="icon-community"></div>
+					<div class="step-text">
+						<h3>Sign Up</h3>
+						<p>Sign up for an account in just a matter of minutes</p>
+					</div>
+				</div>
+				<div class="step mb">
+					<div class="icon-help"></div>
+					<div class="step-text">
+						<h3>Verify Your ID</h3>
+						<p>Verify Your ID uploading your documents</p>
+					</div>
+				</div>
+				<div class="step">
+					<div class="icon-pay"></div>
+					<div class="step-text">
+						<h3>Start Trading</h3>
+						<p>Fund your account and start trading on the world's financial markets</p>
+					</div>
+				</div>
+			</div>
+			<div class="cta-wrapper flex">
+				<a class="btn popup-reg-btn border-radius-10 accent-bg-1 white ff-bold" href="live.html">Start Trading</a>
+			</div>
+		</div>
+	</section>
+
+	<footer style="padding-top: 100px;">
+		<div class="wrapper">
+			<div class="footer-top flex">
+				<div class="logo-section" style="flex-grow: 1;">
+					<ul class="social-icons flex">
+						<li class="icon-in"><a href="#"></a></li>
+						<li class="icon-twitter"><a href="#"></a></li>
+						<li class="icon-fb"><a href="#"></a></li>
+						<li class="icon-youtube"><a href="#"></a></li>
+						<li class="icon-insta"><a href="#"></a></li>
+					</ul>
+					<span class="copyright-1">© Apex Markets Group <span class="year"></span></span>
+				</div>
+				<div class="nav-section-wrapper flex flex-wrap">
+					<ul class="nav-section">
+						<li><a href="kyc_aml.html">KYC & AML</a></li>
+					</ul>
+					<ul class="nav-section">
+						<li><a href="risk_disclosure.html">Risk Disclosure</a></li>
+					</ul>
+					<ul class="nav-section">
+						<li><a href="dsrl.html">Dispute Resolution</a></li>
+					</ul>
+					<ul class="nav-section">
+						<li><a href="cookies.html">Cookies Policy</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div class="footer-bottom">
+			<div class="disclaimer wrapper">
+				<p>Risk Warning: Trading Contracts for Difference (CFDs) on margin carries a high level of risk and may not be suitable for all investors. Before deciding to trade Contracts for Difference (CFDs), you should carefully consider your trading objectives, level of experience and risk appetite. Please ensure you fully understand the risks and take appropriate care to manage your risk.</p> 
+				<br>
+				<p class="ff-bold">Apex Markets Group does not accept clients from OFAC listed countries.</p>
+			</div>
+			<div class="copyright-2">© Apex Markets Group <span class="year"></span></div>
+		</div>
+		
+	</footer>
+	<script src="dist/jwt-decode.js"></script>
+    <script src="dist/accountClient.js"></script>
+    <script>
+        const token = localStorage.getItem('token');
+        let accountId = localStorage.getItem('accountId');
+        if (!token) {
+            window.location.href = 'clientlogin.html';
+            throw new Error('No token found');
+        }
+        if (!accountId) {
+            localStorage.setItem('redirectReason', 'Please create a live account to purchase a prop account.');
+            window.location.href = 'live.html';
+            throw new Error('No live account created');
+        }
+        const client = accountClient(token);
+
+        async function loadPropAccounts() {
+            const cardsContainer = document.getElementById('prop-cards');
+            try {
+                const propAccounts = await client.getAllPropAccounts();
+                cardsContainer.innerHTML = '';
+
+                propAccounts.forEach(account => {
+                    const card = document.createElement('div');
+                    card.className = 'prop-card-wrapper border-radius-10';
+                    card.innerHTML = `
+                        <div class="prop-card-header">
+                            <div class="prop-price ff-bold">$${account.tradingBalance.toLocaleString()}</div>
+                            <div class="prop-title">${account.title}</div>
+                        </div>
+                        <div class="prop-card-body">
+                            <ul class="prop-card-details">
+                                <li>Profit Target (Phase I): <span class="ff-bold">${account.profitTargetPhase1}%</span></li>
+                                <li>Profit Target (Phase II): <span class="ff-bold">${account.profitTargetPhase2}%</span></li>
+                                <li>Daily Loss Limit: <span class="ff-bold">${account.dailyLossLimit}%</span></li>
+                                <li>Max Trailing Drawdown: <span class="ff-bold">${account.maxTrailingDrawdown}%</span></li>
+                                <li>Minimum Trading Days: <span class="ff-bold">${account.minTradingDays}</span></li>
+                                <li>Leverage Max: <span class="ff-bold">${account.leverageMax}</span></li>
+                                <li>Re-Entry Allowed: <span class="ff-bold">${account.reEntryAllowed}</span></li>
+                            </ul>
+                        </div>
+                        <div class="prop-card-footer">
+                            <div class="prop-fee accent-text">CHALLENGE FEE: <span>$${account.challengeFee}</span></div>
+                            <div>Fee 100% Refunded Upon Passing Phases I and II</div>
+                            <div class="prop-card-cta">
+                                <button class="btn border-radius-10 accent-bg-1 white-text ff-bold" 
+                                        onclick="showConfirmModal('${account.id}', ${account.challengeFee}, ${account.tradingBalance}, '${account.title}')">
+                                    Trade Now
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    cardsContainer.appendChild(card);
+                });
+            } catch (error) {
+                cardsContainer.innerHTML = `<p style="color: red;">${error.message || 'Failed to load prop accounts'}</p>`;
+            }
+        }
+
+        function showConfirmModal(propAccountId, depositAmount, tradingBalance, title) {
+            const modal = document.getElementById('confirmModal');
+            const modalText = document.getElementById('modalText');
+            const modalStatus = document.getElementById('modalStatus');
+            modalText.textContent = `Are you sure you want to purchase the ${title} account for $${depositAmount}?`;
+            modalStatus.textContent = '';
+            modal.style.display = 'flex';
+
+            document.getElementById('confirmBtn').onclick = async () => {
+                try {
+                    modalStatus.textContent = 'Purchasing...';
+                    modalStatus.style.color = 'black';
+                    await client.purchaseAccount(accountId, depositAmount, tradingBalance);
+                    
+                    const userId = jwt_decode(token).id;
+        			await client.createTransaction(userId, accountId, propAccountId, depositAmount, tradingBalance, title);
+
+                    modalStatus.textContent = 'Purchase successful! Redirecting...';
+                    modalStatus.style.color = 'green';
+                    setTimeout(() => {
+                        modal.style.display = 'none';
+                        window.location.href = 'userDarshboard.html';
+                    }, 2000);
+                } catch (error) {
+                    modalStatus.textContent = error.message || 'Error purchasing account';
+                    modalStatus.style.color = 'red';
+                    if (error.message.includes('accountId')) {
+                        // localStorage.setItem('redirectReason', 'Invalid account ID. Please create a live account.');
+                        setTimeout(() => {
+                            modal.style.display = 'none';
+                            window.location.href = 'live.html';
+                        }, 2000);
+                    }
+                }
+            };
+
+            document.getElementById('cancelBtn').onclick = () => {
+                modal.style.display = 'none';
+            };
+        }
+
+		document.getElementById('logout-link').addEventListener('click', () => {
+            localStorage.clear();
+            window.location.href = 'clientlogin.html';
+        });
+
+        loadPropAccounts();
+    </script>
+</body>
+</html>

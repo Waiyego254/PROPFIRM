@@ -1,0 +1,57 @@
+# Base URL
+@baseUrl = http://localhost:3000
+@userToken = {{loginUser.response.body.token}}
+@adminToken = {{loginAdmin.response.body.token}}
+
+### LOGIN USER (For trade simulation)
+# @name loginUser
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "timo@example.com",
+    "password": "12345678"
+}
+
+### CREATE LIVE ACCOUNT (For trade simulation)
+# @name createLiveAccount
+POST {{baseUrl}}/accounts/create
+Content-Type: application/json
+Authorization: Bearer {{userToken}}
+
+{
+    "userId": "{{loginUser.response.body.user.id}}",
+    "type": "live"
+}
+
+### PURCHASE LIVE ACCOUNT (For trade simulation)
+POST {{baseUrl}}/accounts/purchase
+Content-Type: application/json
+Authorization: Bearer {{userToken}}
+
+{
+    "accountId": "{{createLiveAccount.response.body.account.id}}",
+    "depositAmount": 100,
+    "tradingBalance": 5000
+}
+
+### SIMULATE TRADE (User action)
+POST {{baseUrl}}/accounts/trade
+Content-Type: application/json
+Authorization: Bearer {{userToken}}
+
+{
+    "accountId": "{{createLiveAccount.response.body.account.id}}",
+    "amount": -200,
+    "description": "Forex trade - EUR/USD"
+}
+
+### GET TRADE TRANSACTIONS
+GET {{baseUrl}}/accounts/trade-transactions/{{loginUser.response.body.user.id}}
+Content-Type: application/json
+Authorization: Bearer {{userToken}}
+
+### FETCH ALL TRADES (Admin action)
+GET {{baseUrl}}/admin/trades
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
